@@ -32,6 +32,7 @@
                         <th>Outubro</th>
                         <th>Novembro</th>
                         <th>Dezembro</th>
+                        <th>Total do Ano</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -39,12 +40,21 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td>Total a Receber:</td>
-                        <td colspan="12" id="total-recebido">R$ 0</td>
-                    </tr>
-                    <tr>
-                        <td>Total Recebido:</td>
-                        <td colspan="12" id="total-a-receber">R$ 0</td>
+                        <td>Subtotal Mensal:</td>
+                        <td id="subtotal-janeiro">R$ 0</td>
+                        <td id="subtotal-fevereiro">R$ 0</td>
+                        <td id="subtotal-marco">R$ 0</td>
+                        <td id="subtotal-abril">R$ 0</td>
+                        <td id="subtotal-maio">R$ 0</td>
+                        <td id="subtotal-junho">R$ 0</td>
+                        <td id="subtotal-julho">R$ 0</td>
+                        <td id="subtotal-agosto">R$ 0</td>
+                        <td id="subtotal-setembro">R$ 0</td>
+                        <td id="subtotal-outubro">R$ 0</td>
+                        <td id="subtotal-novembro">R$ 0</td>
+                        <td id="subtotal-dezembro">R$ 0</td>
+                        <td id="subtotal-anual">R$ 0</td>
+                        <td></td>
                     </tr>
                 </tfoot>
             </table>
@@ -70,6 +80,7 @@
                         <th>Outubro</th>
                         <th>Novembro</th>
                         <th>Dezembro</th>
+                        <th>Total do Ano</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -77,12 +88,21 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td>Total a Pagar:</td>
-                        <td colspan="12" id="total-pago">R$ 0</td>
-                    </tr>
-                    <tr>
-                        <td>Total Pago:</td>
-                        <td colspan="12" id="total-a-pagar">R$ 0</td>
+                        <td>Subtotal Mensal:</td>
+                        <td id="subtotal-pago-janeiro">R$ 0</td>
+                        <td id="subtotal-pago-fevereiro">R$ 0</td>
+                        <td id="subtotal-pago-marco">R$ 0</td>
+                        <td id="subtotal-pago-abril">R$ 0</td>
+                        <td id="subtotal-pago-maio">R$ 0</td>
+                        <td id="subtotal-pago-junho">R$ 0</td>
+                        <td id="subtotal-pago-julho">R$ 0</td>
+                        <td id="subtotal-pago-agosto">R$ 0</td>
+                        <td id="subtotal-pago-setembro">R$ 0</td>
+                        <td id="subtotal-pago-outubro">R$ 0</td>
+                        <td id="subtotal-pago-novembro">R$ 0</td>
+                        <td id="subtotal-pago-dezembro">R$ 0</td>
+                        <td id="subtotal-pago-anual">R$ 0</td>
+                        <td></td>
                     </tr>
                 </tfoot>
             </table>
@@ -118,6 +138,7 @@
                     html += `<td><span contenteditable="true" onblur="atualizarTotais(); salvarTabela();">0</span>
                              <input type="checkbox" onchange="updateTotais(this)"></td>`;
                 }
+                html += `<td><span class="total-ano">R$ 0</span></td>`;
                 html += `<td><button class="btn btn-danger btn-sm" onclick="removerLinha(this)">🗑️</button></td>`;
                 novaLinha.innerHTML = html;
                 tabela.appendChild(novaLinha);
@@ -126,43 +147,34 @@
 
             // Atualizar totais
             function atualizarTotais() {
-                let totalRecebido = 0, totalAReceber = 0;
-                let totalPago = 0, totalAPagar = 0;
+                const meses = [
+                    "janeiro", "fevereiro", "marco", "abril", "maio", "junho",
+                    "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
+                ];
+                const subtotais = {};
+                meses.forEach(mes => subtotais[mes] = 0);
 
                 document.querySelectorAll('#faturamento-table tbody tr').forEach(row => {
-                    row.querySelectorAll('td').forEach(cell => {
+                    let totalAno = 0;
+                    row.querySelectorAll('td').forEach((cell, index) => {
                         const span = cell.querySelector('span');
-                        const checkbox = cell.querySelector('input[type="checkbox"]');
-                        if (span) {
+                        if (span && index < 12) {
                             const valor = parseFloat(span.textContent) || 0;
-                            if (checkbox && checkbox.checked) {
-                                totalRecebido += valor;
-                            } else {
-                                totalAReceber += valor;
-                            }
+                            subtotais[meses[index]] += valor;
+                            totalAno += valor;
                         }
                     });
+                    const totalAnoCell = row.querySelector('.total-ano');
+                    if (totalAnoCell) totalAnoCell.textContent = `R$ ${totalAno}`;
                 });
 
-                document.querySelectorAll('#despesas-table tbody tr').forEach(row => {
-                    row.querySelectorAll('td').forEach(cell => {
-                        const span = cell.querySelector('span');
-                        const checkbox = cell.querySelector('input[type="checkbox"]');
-                        if (span) {
-                            const valor = parseFloat(span.textContent) || 0;
-                            if (checkbox && checkbox.checked) {
-                                totalPago += valor;
-                            } else {
-                                totalAPagar += valor;
-                            }
-                        }
-                    });
+                meses.forEach((mes, index) => {
+                    document.getElementById(`subtotal-${mes}`).textContent = `R$ ${subtotais[mes]}`;
                 });
 
-                document.getElementById('total-recebido').textContent = `R$ ${totalAReceber}`;
-                document.getElementById('total-a-receber').textContent = `R$ ${totalRecebido}`;
-                document.getElementById('total-pago').textContent = `R$ ${totalAPagar}`;
-                document.getElementById('total-a-pagar').textContent = `R$ ${totalPago}`;
+                document.getElementById('subtotal-anual').textContent = `R$ ${Object.values(subtotais).reduce((a, b) => a + b, 0)}`;
+
+                salvarTabela();
             }
 
             // Atualizar totais ao marcar/desmarcar
