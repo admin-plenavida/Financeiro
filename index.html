@@ -37,11 +37,11 @@
                 <tfoot>
                     <tr>
                         <td>Total a Receber:</td>
-                        <td colspan="12" id="total-recebido">R$ 0.00</td>
+                        <td colspan="12" id="total-recebido">R$ 0</td>
                     </tr>
                     <tr>
                         <td>Total Recebido:</td>
-                        <td colspan="12" id="total-a-receber">R$ 0.00</td>
+                        <td colspan="12" id="total-a-receber">R$ 0</td>
                     </tr>
                 </tfoot>
             </table>
@@ -74,11 +74,11 @@
                 <tfoot>
                     <tr>
                         <td>Total a Pagar:</td>
-                        <td colspan="12" id="total-pago">R$ 0.00</td>
+                        <td colspan="12" id="total-pago">R$ 0</td>
                     </tr>
                     <tr>
                         <td>Total Pago:</td>
-                        <td colspan="12" id="total-a-pagar">R$ 0.00</td>
+                        <td colspan="12" id="total-a-pagar">R$ 0</td>
                     </tr>
                 </tfoot>
             </table>
@@ -99,6 +99,7 @@
                 if (tabelas) {
                     document.getElementById('faturamento-table').innerHTML = tabelas.faturamento;
                     document.getElementById('despesas-table').innerHTML = tabelas.despesas;
+                    configurarEventos();
                     atualizarTotais();
                 }
             }
@@ -110,7 +111,8 @@
 
                 let html = `<td contenteditable="true">${tipo} ${tabela.rows.length + 1}</td>`;
                 for (let i = 1; i <= 12; i++) {
-                    html += `<td><input type="checkbox" onchange="updateTotais(this)"> <span contenteditable="true" onblur="salvarTabela()">0.00</span></td>`;
+                    html += `<td><span contenteditable="true" onblur="atualizarTotais(); salvarTabela();">0</span>
+                             <input type="checkbox" onchange="updateTotais(this)"></td>`;
                 }
                 novaLinha.innerHTML = html;
                 tabela.appendChild(novaLinha);
@@ -123,39 +125,62 @@
                 let totalPago = 0, totalAPagar = 0;
 
                 document.querySelectorAll('#faturamento-table tbody tr').forEach(row => {
-                    row.querySelectorAll('span').forEach((span, index) => {
-                        const valor = parseFloat(span.textContent.replace(',', '.')) || 0;
-                        const checkbox = row.querySelectorAll('input[type="checkbox"]')[index];
-                        if (checkbox && checkbox.checked) {
-                            totalRecebido += valor;
-                        } else {
-                            totalAReceber += valor;
+                    row.querySelectorAll('td').forEach(cell => {
+                        const span = cell.querySelector('span');
+                        const checkbox = cell.querySelector('input[type="checkbox"]');
+                        if (span) {
+                            const valor = parseFloat(span.textContent) || 0;
+                            if (checkbox && checkbox.checked) {
+                                totalRecebido += valor;
+                            } else {
+                                totalAReceber += valor;
+                            }
                         }
                     });
                 });
 
                 document.querySelectorAll('#despesas-table tbody tr').forEach(row => {
-                    row.querySelectorAll('span').forEach((span, index) => {
-                        const valor = parseFloat(span.textContent.replace(',', '.')) || 0;
-                        const checkbox = row.querySelectorAll('input[type="checkbox"]')[index];
-                        if (checkbox && checkbox.checked) {
-                            totalPago += valor;
-                        } else {
-                            totalAPagar += valor;
+                    row.querySelectorAll('td').forEach(cell => {
+                        const span = cell.querySelector('span');
+                        const checkbox = cell.querySelector('input[type="checkbox"]');
+                        if (span) {
+                            const valor = parseFloat(span.textContent) || 0;
+                            if (checkbox && checkbox.checked) {
+                                totalPago += valor;
+                            } else {
+                                totalAPagar += valor;
+                            }
                         }
                     });
                 });
 
-                document.getElementById('total-recebido').textContent = `R$ ${totalAReceber.toFixed(2).replace('.', ',')}`;
-                document.getElementById('total-a-receber').textContent = `R$ ${totalRecebido.toFixed(2).replace('.', ',')}`;
-                document.getElementById('total-pago').textContent = `R$ ${totalAPagar.toFixed(2).replace('.', ',')}`;
-                document.getElementById('total-a-pagar').textContent = `R$ ${totalPago.toFixed(2).replace('.', ',')}`;
+                document.getElementById('total-recebido').textContent = `R$ ${totalAReceber}`;
+                document.getElementById('total-a-receber').textContent = `R$ ${totalRecebido}`;
+                document.getElementById('total-pago').textContent = `R$ ${totalAPagar}`;
+                document.getElementById('total-a-pagar').textContent = `R$ ${totalPago}`;
             }
 
             // Atualizar totais ao marcar/desmarcar
             function updateTotais(checkbox) {
                 salvarTabela();
                 atualizarTotais();
+            }
+
+            // Configurar eventos após carregar dados
+            function configurarEventos() {
+                document.querySelectorAll('span[contenteditable="true"]').forEach(span => {
+                    span.onblur = function() {
+                        atualizarTotais();
+                        salvarTabela();
+                    };
+                });
+
+                document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.onchange = function() {
+                        atualizarTotais();
+                        salvarTabela();
+                    };
+                });
             }
 
             // Carregar dados ao iniciar
