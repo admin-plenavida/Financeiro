@@ -175,3 +175,124 @@
                 novaLinha.innerHTML = html;
                 tabela.appendChild(novaLinha);
                 salvarTabela();
+            }
+
+            function evitarDescerLinha(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    const nextCell = event.target.closest('td').nextElementSibling;
+                    if (nextCell && nextCell.querySelector('span')) {
+                        nextCell.querySelector('span').focus();
+                    }
+                }
+            }
+
+            // Atualizar totais
+            function atualizarTotais() {
+                const meses = [
+                    "janeiro", "fevereiro", "marco", "abril", "maio", "junho",
+                    "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
+                ];
+
+                const subtotais = {
+                    faturamento: Array(12).fill(0),
+                    despesas: Array(12).fill(0)
+                };
+
+                // Atualizar faturamento
+                document.querySelectorAll('#faturamento-table tbody tr').forEach(row => {
+                    let totalAno = 0;
+                    row.querySelectorAll('td').forEach((cell, index) => {
+                        const span = cell.querySelector('span');
+                        if (span && index < 12) {
+                            const valor = parseFloat(span.textContent) || 0;
+                            subtotais.faturamento[index] += valor;
+                            totalAno += valor;
+                        }
+                    });
+                    const totalAnoCell = row.querySelector('.total-ano');
+                    if (totalAnoCell) totalAnoCell.textContent = `R$ ${totalAno}`;
+                });
+
+                meses.forEach((mes, index) => {
+                    document.getElementById(`total-receber-${mes}`).textContent = `R$ ${subtotais.faturamento[index]}`;
+                });
+
+                document.getElementById('total-receber-anual').textContent = `R$ ${subtotais.faturamento.reduce((a, b) => a + b, 0)}`;
+
+                // Atualizar despesas
+                document.querySelectorAll('#despesas-table tbody tr').forEach(row => {
+                    let totalAno = 0;
+                    row.querySelectorAll('td').forEach((cell, index) => {
+                        const span = cell.querySelector('span');
+                        if (span && index < 12) {
+                            const valor = parseFloat(span.textContent) || 0;
+                            subtotais.despesas[index] += valor;
+                            totalAno += valor;
+                        }
+                    });
+                    const totalAnoCell = row.querySelector('.total-ano');
+                    if (totalAnoCell) totalAnoCell.textContent = `R$ ${totalAno}`;
+                });
+
+                meses.forEach((mes, index) => {
+                    document.getElementById(`total-pagar-${mes}`).textContent = `R$ ${subtotais.despesas[index]}`;
+                });
+
+                document.getElementById('total-pagar-anual').textContent = `R$ ${subtotais.despesas.reduce((a, b) => a + b, 0)}`;
+
+                salvarTabela();
+            }
+
+            // Remover linha
+            function removerLinha(botao) {
+                botao.closest('tr').remove();
+                salvarTabela();
+                atualizarTotais();
+            }
+
+            // Resetar tabelas
+            function resetarTabelas() {
+                if (confirm('Deseja realmente apagar todas as informações e reiniciar as tabelas?')) {
+                    document.getElementById('faturamento-table').querySelector('tbody').innerHTML = '';
+                    document.getElementById('despesas-table').querySelector('tbody').innerHTML = '';
+                    salvarTabela();
+                    atualizarTotais();
+                }
+            }
+
+            // Exportar toda a tabela para Excel
+            function exportarParaExcel() {
+                const tabelas = [
+                    document.getElementById('faturamento-table'),
+                    document.getElementById('despesas-table')
+                ];
+                let csv = '';
+
+                tabelas.forEach(tabela => {
+                    const linhas = Array.from(tabela.rows);
+                    csv += linhas.map(linha => {
+                        const celulas = Array.from(linha.cells);
+                        return celulas.map(celula => celula.innerText).join(',');
+                    }).join('\n') + '\n\n';
+                });
+
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.setAttribute('hidden', '');
+                a.setAttribute('href', url);
+                a.setAttribute('download', 'tabelas_financeiras.csv');
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+
+            // Carregar dados ao iniciar
+            window.onload = function() {
+                carregarTabelas();
+            };
+        </script>
+    </div>
+</body>
+</html>
