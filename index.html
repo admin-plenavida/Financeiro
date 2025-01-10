@@ -14,7 +14,7 @@
         <div class="mb-5">
             <h2>Faturamento</h2>
             <button class="btn btn-primary mb-3" onclick="adicionarLinha('faturamento-table', 'Nota')">Adicionar Nota</button>
-            <button class="btn btn-secondary mb-3" onclick="confirmarFormatacao()">Formatar Valores</button>
+            <button class="btn btn-secondary mb-3" onclick="resetarTabelas()">Formatar Tabelas</button>
             <button class="btn btn-success mb-3" onclick="exportarParaExcel()">Exportar para Excel</button>
             <table class="table table-bordered" id="faturamento-table">
                 <thead>
@@ -188,12 +188,11 @@
                 });
             }
 
-            // Formatar valores com confirmação
-            function confirmarFormatacao() {
-                if (confirm('Deseja realmente formatar todos os valores para zero?')) {
-                    document.querySelectorAll('span[contenteditable="true"]').forEach(span => {
-                        span.textContent = 0;
-                    });
+            // Resetar tabelas com confirmação
+            function resetarTabelas() {
+                if (confirm('Deseja realmente apagar todas as informações e reiniciar as tabelas?')) {
+                    document.getElementById('faturamento-table').querySelector('tbody').innerHTML = '';
+                    document.getElementById('despesas-table').querySelector('tbody').innerHTML = '';
                     salvarTabela();
                     atualizarTotais();
                 }
