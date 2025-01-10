@@ -33,26 +33,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td contenteditable="true">Nota 1</td>
-                        <td><input type="checkbox" onchange="updateFaturamento(this, 1)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                        <td><input type="checkbox" onchange="updateFaturamento(this, 2)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                        <td><input type="checkbox" onchange="updateFaturamento(this, 3)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                        <td><input type="checkbox" onchange="updateFaturamento(this, 4)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                        <td><input type="checkbox" onchange="updateFaturamento(this, 5)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                        <td><input type="checkbox" onchange="updateFaturamento(this, 6)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                        <td><input type="checkbox" onchange="updateFaturamento(this, 7)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                        <td><input type="checkbox" onchange="updateFaturamento(this, 8)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                        <td><input type="checkbox" onchange="updateFaturamento(this, 9)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                        <td><input type="checkbox" onchange="updateFaturamento(this, 10)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                        <td><input type="checkbox" onchange="updateFaturamento(this, 11)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                        <td><input type="checkbox" onchange="updateFaturamento(this, 12)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                    </tr>
                 </tbody>
                 <tfoot>
                     <tr>
                         <td>Total a Receber:</td>
-                        <td colspan="12" id="total-recebido">R$ 12.00</td>
+                        <td colspan="12" id="total-recebido">R$ 0.00</td>
                     </tr>
                     <tr>
                         <td>Total Recebido:</td>
@@ -85,26 +70,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td contenteditable="true">Conta 1</td>
-                        <td><input type="checkbox" onchange="updateDespesas(this, 1)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                        <td><input type="checkbox" onchange="updateDespesas(this, 2)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                        <td><input type="checkbox" onchange="updateDespesas(this, 3)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                        <td><input type="checkbox" onchange="updateDespesas(this, 4)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                        <td><input type="checkbox" onchange="updateDespesas(this, 5)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                        <td><input type="checkbox" onchange="updateDespesas(this, 6)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                        <td><input type="checkbox" onchange="updateDespesas(this, 7)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                        <td><input type="checkbox" onchange="updateDespesas(this, 8)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                        <td><input type="checkbox" onchange="updateDespesas(this, 9)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                        <td><input type="checkbox" onchange="updateDespesas(this, 10)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                        <td><input type="checkbox" onchange="updateDespesas(this, 11)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                        <td><input type="checkbox" onchange="updateDespesas(this, 12)"> <span contenteditable="true" onblur="salvarTabela()">1.00</span></td>
-                    </tr>
                 </tbody>
                 <tfoot>
                     <tr>
                         <td>Total a Pagar:</td>
-                        <td colspan="12" id="total-pago">R$ 12.00</td>
+                        <td colspan="12" id="total-pago">R$ 0.00</td>
                     </tr>
                     <tr>
                         <td>Total Pago:</td>
@@ -115,6 +85,7 @@
         </div>
 
         <script>
+            // Salvar e carregar tabelas no localStorage
             function salvarTabela() {
                 const tabelas = {
                     faturamento: document.getElementById('faturamento-table').innerHTML,
@@ -124,4 +95,74 @@
             }
 
             function carregarTabelas() {
-                const tabelas = JSON.parse(localStorage.getItem('tabelasFinance
+                const tabelas = JSON.parse(localStorage.getItem('tabelasFinanceiras'));
+                if (tabelas) {
+                    document.getElementById('faturamento-table').innerHTML = tabelas.faturamento;
+                    document.getElementById('despesas-table').innerHTML = tabelas.despesas;
+                    atualizarTotais();
+                }
+            }
+
+            // Adicionar nova linha na tabela
+            function adicionarLinha(tabelaId, tipo) {
+                const tabela = document.getElementById(tabelaId).querySelector('tbody');
+                const novaLinha = document.createElement('tr');
+
+                let html = `<td contenteditable="true">${tipo} ${tabela.rows.length + 1}</td>`;
+                for (let i = 1; i <= 12; i++) {
+                    html += `<td><input type="checkbox" onchange="updateTotais(this)"> <span contenteditable="true" onblur="salvarTabela()">0.00</span></td>`;
+                }
+                novaLinha.innerHTML = html;
+                tabela.appendChild(novaLinha);
+                salvarTabela();
+            }
+
+            // Atualizar totais
+            function atualizarTotais() {
+                let totalRecebido = 0, totalAReceber = 0;
+                let totalPago = 0, totalAPagar = 0;
+
+                document.querySelectorAll('#faturamento-table tbody tr').forEach(row => {
+                    row.querySelectorAll('span').forEach((span, index) => {
+                        const valor = parseFloat(span.textContent.replace(',', '.')) || 0;
+                        const checkbox = row.querySelectorAll('input[type="checkbox"]')[index];
+                        if (checkbox && checkbox.checked) {
+                            totalRecebido += valor;
+                        } else {
+                            totalAReceber += valor;
+                        }
+                    });
+                });
+
+                document.querySelectorAll('#despesas-table tbody tr').forEach(row => {
+                    row.querySelectorAll('span').forEach((span, index) => {
+                        const valor = parseFloat(span.textContent.replace(',', '.')) || 0;
+                        const checkbox = row.querySelectorAll('input[type="checkbox"]')[index];
+                        if (checkbox && checkbox.checked) {
+                            totalPago += valor;
+                        } else {
+                            totalAPagar += valor;
+                        }
+                    });
+                });
+
+                document.getElementById('total-recebido').textContent = `R$ ${totalAReceber.toFixed(2).replace('.', ',')}`;
+                document.getElementById('total-a-receber').textContent = `R$ ${totalRecebido.toFixed(2).replace('.', ',')}`;
+                document.getElementById('total-pago').textContent = `R$ ${totalAPagar.toFixed(2).replace('.', ',')}`;
+                document.getElementById('total-a-pagar').textContent = `R$ ${totalPago.toFixed(2).replace('.', ',')}`;
+            }
+
+            // Atualizar totais ao marcar/desmarcar
+            function updateTotais(checkbox) {
+                salvarTabela();
+                atualizarTotais();
+            }
+
+            // Carregar dados ao iniciar
+            window.onload = function() {
+                carregarTabelas();
+            };
+        </script>
+    </div>
+</body>
+</html>
