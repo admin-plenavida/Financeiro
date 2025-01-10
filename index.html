@@ -51,11 +51,11 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td>Total Recebido:</td>
+                        <td>Total a Receber:</td>
                         <td colspan="12" id="total-recebido">R$ 0.00</td>
                     </tr>
                     <tr>
-                        <td>Total a Receber:</td>
+                        <td>Total Recebido:</td>
                         <td colspan="12" id="total-a-receber">R$ 0.00</td>
                     </tr>
                 </tfoot>
@@ -103,11 +103,11 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td>Total Pago:</td>
+                        <td>Total a Pagar:</td>
                         <td colspan="12" id="total-pago">R$ 0.00</td>
                     </tr>
                     <tr>
-                        <td>Total a Pagar:</td>
+                        <td>Total Pago:</td>
                         <td colspan="12" id="total-a-pagar">R$ 0.00</td>
                     </tr>
                 </tfoot>
@@ -119,36 +119,38 @@
                 const valueCell = checkbox.nextElementSibling;
                 const value = parseFloat(valueCell.textContent.replace(',', '.')) || 0;
 
-                let totalRecebido = parseFloat(document.getElementById('total-recebido').textContent.replace('R$ ', '').replace(',', '.')) || 0;
-                let totalAReceber = parseFloat(document.getElementById('total-a-receber').textContent.replace('R$ ', '').replace(',', '.')) || 0;
+                let totalRecebido = parseFloat(document.getElementById('total-a-receber').textContent.replace('R$ ', '').replace(',', '.')) || 0;
+                let totalAReceber = parseFloat(document.getElementById('total-recebido').textContent.replace('R$ ', '').replace(',', '.')) || 0;
 
-                if (!checkbox.checked) {
-                    totalAReceber += value;
-                } else {
+                if (checkbox.checked) {
                     totalRecebido += value;
                     totalAReceber -= value;
+                } else {
+                    totalRecebido -= value;
+                    totalAReceber += value;
                 }
 
-                document.getElementById('total-recebido').textContent = `R$ ${totalRecebido.toFixed(2).replace('.', ',')}`;
-                document.getElementById('total-a-receber').textContent = `R$ ${totalAReceber.toFixed(2).replace('.', ',')}`;
+                document.getElementById('total-a-receber').textContent = `R$ ${totalRecebido.toFixed(2).replace('.', ',')}`;
+                document.getElementById('total-recebido').textContent = `R$ ${totalAReceber.toFixed(2).replace('.', ',')}`;
             }
 
             function updateDespesas(checkbox, monthIndex) {
                 const valueCell = checkbox.nextElementSibling;
                 const value = parseFloat(valueCell.textContent.replace(',', '.')) || 0;
 
-                let totalPago = parseFloat(document.getElementById('total-pago').textContent.replace('R$ ', '').replace(',', '.')) || 0;
-                let totalAPagar = parseFloat(document.getElementById('total-a-pagar').textContent.replace('R$ ', '').replace(',', '.')) || 0;
+                let totalPago = parseFloat(document.getElementById('total-a-pagar').textContent.replace('R$ ', '').replace(',', '.')) || 0;
+                let totalAPagar = parseFloat(document.getElementById('total-pago').textContent.replace('R$ ', '').replace(',', '.')) || 0;
 
-                if (!checkbox.checked) {
-                    totalAPagar += value;
-                } else {
+                if (checkbox.checked) {
                     totalPago += value;
                     totalAPagar -= value;
+                } else {
+                    totalPago -= value;
+                    totalAPagar += value;
                 }
 
-                document.getElementById('total-pago').textContent = `R$ ${totalPago.toFixed(2).replace('.', ',')}`;
-                document.getElementById('total-a-pagar').textContent = `R$ ${totalAPagar.toFixed(2).replace('.', ',')}`;
+                document.getElementById('total-a-pagar').textContent = `R$ ${totalPago.toFixed(2).replace('.', ',')}`;
+                document.getElementById('total-pago').textContent = `R$ ${totalAPagar.toFixed(2).replace('.', ',')}`;
             }
 
             function adicionarLinha(tabelaId, tipo) {
