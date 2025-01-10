@@ -13,7 +13,9 @@
         <!-- Tabelas de Faturamento -->
         <div class="mb-5">
             <h2>Faturamento</h2>
-            <button class="btn btn-primary mb-3" onclick="adicionarLinha('faturamento-table', 'Cliente')">Adicionar Cliente</button>
+            <button class="btn btn-primary mb-3" onclick="adicionarLinha('faturamento-table', 'Nota')">Adicionar Nota</button>
+            <button class="btn btn-secondary mb-3" onclick="formatarValores()">Formatar Valores</button>
+            <button class="btn btn-success mb-3" onclick="exportarParaExcel('faturamento-table')">Exportar para Excel</button>
             <table class="table table-bordered" id="faturamento-table">
                 <thead>
                     <tr>
@@ -50,7 +52,9 @@
         <!-- Tabelas de Contas a Pagar -->
         <div class="mb-5">
             <h2>Despesas</h2>
-            <button class="btn btn-primary mb-3" onclick="adicionarLinha('despesas-table', 'Categoria')">Adicionar Categoria</button>
+            <button class="btn btn-primary mb-3" onclick="adicionarLinha('despesas-table', 'Conta')">Adicionar Conta</button>
+            <button class="btn btn-secondary mb-3" onclick="formatarValores()">Formatar Valores</button>
+            <button class="btn btn-success mb-3" onclick="exportarParaExcel('despesas-table')">Exportar para Excel</button>
             <table class="table table-bordered" id="despesas-table">
                 <thead>
                     <tr>
@@ -181,6 +185,35 @@
                         salvarTabela();
                     };
                 });
+            }
+
+            // Formatar valores
+            function formatarValores() {
+                document.querySelectorAll('span[contenteditable="true"]').forEach(span => {
+                    span.textContent = parseFloat(span.textContent) || 0;
+                });
+                salvarTabela();
+                atualizarTotais();
+            }
+
+            // Exportar para Excel
+            function exportarParaExcel(tabelaId) {
+                const tabela = document.getElementById(tabelaId);
+                const linhas = Array.from(tabela.rows);
+                const csv = linhas.map(linha => {
+                    const celulas = Array.from(linha.cells);
+                    return celulas.map(celula => celula.innerText).join(',');
+                }).join('\n');
+
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.setAttribute('hidden', '');
+                a.setAttribute('href', url);
+                a.setAttribute('download', `${tabelaId}.csv`);
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
             }
 
             // Carregar dados ao iniciar
