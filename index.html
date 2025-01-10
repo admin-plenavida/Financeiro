@@ -13,6 +13,7 @@
         <!-- Tabelas de Faturamento -->
         <div class="mb-5">
             <h2>Faturamento</h2>
+            <button class="btn btn-primary mb-3" onclick="adicionarLinha('faturamento-table', 'Cliente')">Adicionar Cliente</button>
             <table class="table table-bordered" id="faturamento-table">
                 <thead>
                     <tr>
@@ -51,11 +52,11 @@
                 <tfoot>
                     <tr>
                         <td>Total Recebido:</td>
-                        <td colspan="12" id="total-recebido">0.00</td>
+                        <td colspan="12" id="total-recebido">R$ 0.00</td>
                     </tr>
                     <tr>
                         <td>Total a Receber:</td>
-                        <td colspan="12" id="total-a-receber">0.00</td>
+                        <td colspan="12" id="total-a-receber">R$ 0.00</td>
                     </tr>
                 </tfoot>
             </table>
@@ -64,6 +65,7 @@
         <!-- Tabelas de Contas a Pagar -->
         <div class="mb-5">
             <h2>Contas a Pagar</h2>
+            <button class="btn btn-primary mb-3" onclick="adicionarLinha('despesas-table', 'Categoria')">Adicionar Categoria</button>
             <table class="table table-bordered" id="despesas-table">
                 <thead>
                     <tr>
@@ -102,11 +104,11 @@
                 <tfoot>
                     <tr>
                         <td>Total Pago:</td>
-                        <td colspan="12" id="total-pago">0.00</td>
+                        <td colspan="12" id="total-pago">R$ 0.00</td>
                     </tr>
                     <tr>
                         <td>Total a Pagar:</td>
-                        <td colspan="12" id="total-a-pagar">0.00</td>
+                        <td colspan="12" id="total-a-pagar">R$ 0.00</td>
                     </tr>
                 </tfoot>
             </table>
@@ -115,41 +117,65 @@
         <script>
             function updateFaturamento(checkbox, monthIndex) {
                 const valueCell = checkbox.nextElementSibling;
-                const value = parseFloat(valueCell.textContent) || 0;
+                const value = parseFloat(valueCell.textContent.replace(',', '.')) || 0;
 
-                let totalRecebido = parseFloat(document.getElementById('total-recebido').textContent) || 0;
-                let totalAReceber = parseFloat(document.getElementById('total-a-receber').textContent) || 0;
+                let totalRecebido = parseFloat(document.getElementById('total-recebido').textContent.replace('R$ ', '').replace(',', '.')) || 0;
+                let totalAReceber = parseFloat(document.getElementById('total-a-receber').textContent.replace('R$ ', '').replace(',', '.')) || 0;
 
-                if (checkbox.checked) {
+                if (!checkbox.checked) {
+                    totalAReceber += value;
+                } else {
                     totalRecebido += value;
                     totalAReceber -= value;
-                } else {
-                    totalRecebido -= value;
-                    totalAReceber += value;
                 }
 
-                document.getElementById('total-recebido').textContent = totalRecebido.toFixed(2);
-                document.getElementById('total-a-receber').textContent = totalAReceber.toFixed(2);
+                document.getElementById('total-recebido').textContent = `R$ ${totalRecebido.toFixed(2).replace('.', ',')}`;
+                document.getElementById('total-a-receber').textContent = `R$ ${totalAReceber.toFixed(2).replace('.', ',')}`;
             }
 
             function updateDespesas(checkbox, monthIndex) {
                 const valueCell = checkbox.nextElementSibling;
-                const value = parseFloat(valueCell.textContent) || 0;
+                const value = parseFloat(valueCell.textContent.replace(',', '.')) || 0;
 
-                let totalPago = parseFloat(document.getElementById('total-pago').textContent) || 0;
-                let totalAPagar = parseFloat(document.getElementById('total-a-pagar').textContent) || 0;
+                let totalPago = parseFloat(document.getElementById('total-pago').textContent.replace('R$ ', '').replace(',', '.')) || 0;
+                let totalAPagar = parseFloat(document.getElementById('total-a-pagar').textContent.replace('R$ ', '').replace(',', '.')) || 0;
 
-                if (checkbox.checked) {
+                if (!checkbox.checked) {
+                    totalAPagar += value;
+                } else {
                     totalPago += value;
                     totalAPagar -= value;
-                } else {
-                    totalPago -= value;
-                    totalAPagar += value;
                 }
 
-                document.getElementById('total-pago').textContent = totalPago.toFixed(2);
-                document.getElementById('total-a-pagar').textContent = totalAPagar.toFixed(2);
+                document.getElementById('total-pago').textContent = `R$ ${totalPago.toFixed(2).replace('.', ',')}`;
+                document.getElementById('total-a-pagar').textContent = `R$ ${totalAPagar.toFixed(2).replace('.', ',')}`;
             }
+
+            function adicionarLinha(tabelaId, tipo) {
+                const tabela = document.getElementById(tabelaId).querySelector('tbody');
+                const novaLinha = document.createElement('tr');
+
+                let html = `<td contenteditable="true">${tipo} ${tabela.rows.length + 1}</td>`;
+                for (let i = 1; i <= 12; i++) {
+                    html += `<td><input type="checkbox" onchange="${tabelaId === 'faturamento-table' ? 'updateFaturamento' : 'updateDespesas'}(this, ${i})"> <span contenteditable="true">0.00</span></td>`;
+                }
+                novaLinha.innerHTML = html;
+                tabela.appendChild(novaLinha);
+            }
+
+            document.querySelectorAll('[contenteditable=true]').forEach(cell => {
+                cell.addEventListener('blur', () => {
+                    const valor = parseFloat(cell.textContent.replace(',', '.')) || 0;
+                    const colIndex = cell.closest('td') ? cell.cellIndex : null;
+                    if (colIndex && valor > 0) {
+                        const linha = cell.closest('tr');
+                        for (let i = colIndex + 1; i < linha.cells.length; i++) {
+                            const targetCell = linha.cells[i].querySelector('span');
+                            if (targetCell) targetCell.textContent = valor.toFixed(2).replace('.', ',');
+                        }
+                    }
+                });
+            });
         </script>
     </div>
 </body>
