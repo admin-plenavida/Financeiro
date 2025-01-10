@@ -163,4 +163,15 @@
             }
 
             // Adicionar nova linha na tabela
-            function adicionarLinha(tabelaId, tipo)
+            function adicionarLinha(tabelaId, tipo) {
+                const tabela = document.getElementById(tabelaId).querySelector('tbody');
+                const novaLinha = document.createElement('tr');
+                let html = `<td contenteditable="true">${tipo} ${tabela.rows.length + 1}</td>`;
+                for (let i = 1; i <= 12; i++) {
+                    html += `<td><span contenteditable="true" onfocus="this.textContent=''" onkeydown="evitarDescerLinha(event)" onblur="atualizarTotais(); salvarTabela();">0</span></td>`;
+                }
+                html += `<td><span class="total-ano">R$ 0</span></td>`;
+                html += `<td><button class="btn btn-danger btn-sm" onclick="removerLinha(this)">🗑️</button></td>`;
+                novaLinha.innerHTML = html;
+                tabela.appendChild(novaLinha);
+                salvarTabela();
