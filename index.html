@@ -40,20 +40,37 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td>Subtotal Mensal:</td>
-                        <td id="subtotal-janeiro">R$ 0</td>
-                        <td id="subtotal-fevereiro">R$ 0</td>
-                        <td id="subtotal-marco">R$ 0</td>
-                        <td id="subtotal-abril">R$ 0</td>
-                        <td id="subtotal-maio">R$ 0</td>
-                        <td id="subtotal-junho">R$ 0</td>
-                        <td id="subtotal-julho">R$ 0</td>
-                        <td id="subtotal-agosto">R$ 0</td>
-                        <td id="subtotal-setembro">R$ 0</td>
-                        <td id="subtotal-outubro">R$ 0</td>
-                        <td id="subtotal-novembro">R$ 0</td>
-                        <td id="subtotal-dezembro">R$ 0</td>
-                        <td id="subtotal-anual">R$ 0</td>
+                        <td>Total a Receber:</td>
+                        <td id="total-receber-janeiro">R$ 0</td>
+                        <td id="total-receber-fevereiro">R$ 0</td>
+                        <td id="total-receber-marco">R$ 0</td>
+                        <td id="total-receber-abril">R$ 0</td>
+                        <td id="total-receber-maio">R$ 0</td>
+                        <td id="total-receber-junho">R$ 0</td>
+                        <td id="total-receber-julho">R$ 0</td>
+                        <td id="total-receber-agosto">R$ 0</td>
+                        <td id="total-receber-setembro">R$ 0</td>
+                        <td id="total-receber-outubro">R$ 0</td>
+                        <td id="total-receber-novembro">R$ 0</td>
+                        <td id="total-receber-dezembro">R$ 0</td>
+                        <td id="total-receber-anual">R$ 0</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Total Recebido:</td>
+                        <td id="total-recebido-janeiro">R$ 0</td>
+                        <td id="total-recebido-fevereiro">R$ 0</td>
+                        <td id="total-recebido-marco">R$ 0</td>
+                        <td id="total-recebido-abril">R$ 0</td>
+                        <td id="total-recebido-maio">R$ 0</td>
+                        <td id="total-recebido-junho">R$ 0</td>
+                        <td id="total-recebido-julho">R$ 0</td>
+                        <td id="total-recebido-agosto">R$ 0</td>
+                        <td id="total-recebido-setembro">R$ 0</td>
+                        <td id="total-recebido-outubro">R$ 0</td>
+                        <td id="total-recebido-novembro">R$ 0</td>
+                        <td id="total-recebido-dezembro">R$ 0</td>
+                        <td id="total-recebido-anual">R$ 0</td>
                         <td></td>
                     </tr>
                 </tfoot>
@@ -88,20 +105,37 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td>Subtotal Mensal:</td>
-                        <td id="subtotal-pago-janeiro">R$ 0</td>
-                        <td id="subtotal-pago-fevereiro">R$ 0</td>
-                        <td id="subtotal-pago-marco">R$ 0</td>
-                        <td id="subtotal-pago-abril">R$ 0</td>
-                        <td id="subtotal-pago-maio">R$ 0</td>
-                        <td id="subtotal-pago-junho">R$ 0</td>
-                        <td id="subtotal-pago-julho">R$ 0</td>
-                        <td id="subtotal-pago-agosto">R$ 0</td>
-                        <td id="subtotal-pago-setembro">R$ 0</td>
-                        <td id="subtotal-pago-outubro">R$ 0</td>
-                        <td id="subtotal-pago-novembro">R$ 0</td>
-                        <td id="subtotal-pago-dezembro">R$ 0</td>
-                        <td id="subtotal-pago-anual">R$ 0</td>
+                        <td>Total a Pagar:</td>
+                        <td id="total-pagar-janeiro">R$ 0</td>
+                        <td id="total-pagar-fevereiro">R$ 0</td>
+                        <td id="total-pagar-marco">R$ 0</td>
+                        <td id="total-pagar-abril">R$ 0</td>
+                        <td id="total-pagar-maio">R$ 0</td>
+                        <td id="total-pagar-junho">R$ 0</td>
+                        <td id="total-pagar-julho">R$ 0</td>
+                        <td id="total-pagar-agosto">R$ 0</td>
+                        <td id="total-pagar-setembro">R$ 0</td>
+                        <td id="total-pagar-outubro">R$ 0</td>
+                        <td id="total-pagar-novembro">R$ 0</td>
+                        <td id="total-pagar-dezembro">R$ 0</td>
+                        <td id="total-pagar-anual">R$ 0</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Total Pago:</td>
+                        <td id="total-pago-janeiro">R$ 0</td>
+                        <td id="total-pago-fevereiro">R$ 0</td>
+                        <td id="total-pago-marco">R$ 0</td>
+                        <td id="total-pago-abril">R$ 0</td>
+                        <td id="total-pago-maio">R$ 0</td>
+                        <td id="total-pago-junho">R$ 0</td>
+                        <td id="total-pago-julho">R$ 0</td>
+                        <td id="total-pago-agosto">R$ 0</td>
+                        <td id="total-pago-setembro">R$ 0</td>
+                        <td id="total-pago-outubro">R$ 0</td>
+                        <td id="total-pago-novembro">R$ 0</td>
+                        <td id="total-pago-dezembro">R$ 0</td>
+                        <td id="total-pago-anual">R$ 0</td>
                         <td></td>
                     </tr>
                 </tfoot>
@@ -129,94 +163,4 @@
             }
 
             // Adicionar nova linha na tabela
-            function adicionarLinha(tabelaId, tipo) {
-                const tabela = document.getElementById(tabelaId).querySelector('tbody');
-                const novaLinha = document.createElement('tr');
-
-                let html = `<td contenteditable="true">${tipo} ${tabela.rows.length + 1}</td>`;
-                for (let i = 1; i <= 12; i++) {
-                    html += `<td><span contenteditable="true" onblur="atualizarTotais(); salvarTabela();">0</span>
-                             <input type="checkbox" onchange="updateTotais(this)"></td>`;
-                }
-                html += `<td><span class="total-ano">R$ 0</span></td>`;
-                html += `<td><button class="btn btn-danger btn-sm" onclick="removerLinha(this)">🗑️</button></td>`;
-                novaLinha.innerHTML = html;
-                tabela.appendChild(novaLinha);
-                salvarTabela();
-            }
-
-            // Atualizar totais
-            function atualizarTotais() {
-                const meses = [
-                    "janeiro", "fevereiro", "marco", "abril", "maio", "junho",
-                    "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
-                ];
-
-                const subtotais = {
-                    faturamento: Array(12).fill(0),
-                    despesas: Array(12).fill(0)
-                };
-
-                // Atualizar faturamento
-                document.querySelectorAll('#faturamento-table tbody tr').forEach(row => {
-                    let totalAno = 0;
-                    row.querySelectorAll('td').forEach((cell, index) => {
-                        const span = cell.querySelector('span');
-                        if (span && index < 12) {
-                            const valor = parseFloat(span.textContent) || 0;
-                            subtotais.faturamento[index] += valor;
-                            totalAno += valor;
-                        }
-                    });
-                    const totalAnoCell = row.querySelector('.total-ano');
-                    if (totalAnoCell) totalAnoCell.textContent = `R$ ${totalAno}`;
-                });
-
-                // Atualizar subtotais faturamento
-                meses.forEach((mes, index) => {
-                    document.getElementById(`subtotal-${mes}`).textContent = `R$ ${subtotais.faturamento[index]}`;
-                });
-
-                document.getElementById('subtotal-anual').textContent = `R$ ${subtotais.faturamento.reduce((a, b) => a + b, 0)}`;
-
-                // Atualizar despesas
-                document.querySelectorAll('#despesas-table tbody tr').forEach(row => {
-                    let totalAno = 0;
-                    row.querySelectorAll('td').forEach((cell, index) => {
-                        const span = cell.querySelector('span');
-                        if (span && index < 12) {
-                            const valor = parseFloat(span.textContent) || 0;
-                            subtotais.despesas[index] += valor;
-                            totalAno += valor;
-                        }
-                    });
-                    const totalAnoCell = row.querySelector('.total-ano');
-                    if (totalAnoCell) totalAnoCell.textContent = `R$ ${totalAno}`;
-                });
-
-                // Atualizar subtotais despesas
-                meses.forEach((mes, index) => {
-                    document.getElementById(`subtotal-pago-${mes}`).textContent = `R$ ${subtotais.despesas[index]}`;
-                });
-
-                document.getElementById('subtotal-pago-anual').textContent = `R$ ${subtotais.despesas.reduce((a, b) => a + b, 0)}`;
-
-                salvarTabela();
-            }
-
-            // Atualizar totais ao marcar/desmarcar
-            function updateTotais(checkbox) {
-                salvarTabela();
-                atualizarTotais();
-            }
-
-            // Configurar eventos após carregar dados
-            function configurarEventos() {
-                document.querySelectorAll('span[contenteditable="true"]').forEach(span => {
-                    span.onblur = function() {
-                        atualizarTotais();
-                        salvarTabela();
-                    };
-                });
-
-               
+            function adicionarLinha(tabelaId, tipo)
