@@ -14,7 +14,7 @@
         <!-- Tabelas de Faturamento -->
         <div class="mb-5">
             <h2>Faturamento</h2>
-            <table class="table table-bordered">
+            <table class="table table-bordered" id="faturamento-table">
                 <thead>
                     <tr>
                         <th>Cliente</th>
@@ -24,26 +24,38 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Cliente A</td>
-                        <td>Janeiro</td>
-                        <td>1500.00</td>
-                        <td><input type="checkbox" onchange="updateStatus(this, 'faturamento')"> Recebido</td>
-                    </tr>
-                    <tr>
-                        <td>Cliente B</td>
-                        <td>Fevereiro</td>
-                        <td>2000.00</td>
-                        <td><input type="checkbox" onchange="updateStatus(this, 'faturamento')"> Recebido</td>
-                    </tr>
+                    <!-- Janeiro a Dezembro -->
+                    <script>
+                        const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+                        meses.forEach(mes => {
+                            document.write(`<tr>
+                                <td contenteditable="true">Cliente</td>
+                                <td>${mes}</td>
+                                <td contenteditable="true">0.00</td>
+                                <td><input type="checkbox" onchange="updateFaturamento(this)"> Recebido</td>
+                            </tr>`);
+                        });
+                    </script>
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2">Total Recebido:</td>
+                        <td id="total-recebido">0.00</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Total a Receber:</td>
+                        <td id="total-a-receber">0.00</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
 
         <!-- Tabelas de Contas a Pagar -->
         <div class="mb-5">
             <h2>Contas a Pagar</h2>
-            <table class="table table-bordered">
+            <table class="table table-bordered" id="despesas-table">
                 <thead>
                     <tr>
                         <th>Categoria</th>
@@ -53,71 +65,74 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Aluguel</td>
-                        <td>Janeiro</td>
-                        <td>1000.00</td>
-                        <td><input type="checkbox" onchange="updateStatus(this, 'despesas')"> Pago</td>
-                    </tr>
-                    <tr>
-                        <td>Energia</td>
-                        <td>Fevereiro</td>
-                        <td>300.00</td>
-                        <td><input type="checkbox" onchange="updateStatus(this, 'despesas')"> Pago</td>
-                    </tr>
+                    <!-- Janeiro a Dezembro -->
+                    <script>
+                        meses.forEach(mes => {
+                            document.write(`<tr>
+                                <td contenteditable="true">Categoria</td>
+                                <td>${mes}</td>
+                                <td contenteditable="true">0.00</td>
+                                <td><input type="checkbox" onchange="updateDespesas(this)"> Pago</td>
+                            </tr>`);
+                        });
+                    </script>
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2">Total Pago:</td>
+                        <td id="total-pago">0.00</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Total a Pagar:</td>
+                        <td id="total-a-pagar">0.00</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
 
-        <!-- Resumo Financeiro -->
-        <div>
-            <h2>Resumo Financeiro</h2>
-            <canvas id="financeChart"></canvas>
-        </div>
-    </div>
+        <script>
+            function updateFaturamento(checkbox) {
+                const row = checkbox.closest('tr');
+                const valueCell = row.querySelector('td:nth-child(3)');
+                const value = parseFloat(valueCell.textContent) || 0;
 
-    <script>
-        // Atualizar o status de faturamento ou despesas
-        function updateStatus(checkbox, type) {
-            const row = checkbox.closest('tr');
-            const valueCell = row.querySelector('td:nth-child(3)');
-            const value = parseFloat(valueCell.textContent);
+                let totalRecebido = parseFloat(document.getElementById('total-recebido').textContent) || 0;
+                let totalAReceber = parseFloat(document.getElementById('total-a-receber').textContent) || 0;
 
-            if (checkbox.checked) {
-                alert(`${type === 'faturamento' ? 'Recebido' : 'Pago'}: R$ ${value}`);
-            } else {
-                alert(`${type === 'faturamento' ? 'Não Recebido' : 'Não Pago'}: R$ ${value}`);
-            }
-        }
-
-        // Exemplo de gráfico de resumo financeiro
-        const ctx = document.getElementById('financeChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Janeiro', 'Fevereiro'],
-                datasets: [
-                    {
-                        label: 'Recebido',
-                        data: [1500, 2000],
-                        backgroundColor: 'rgba(75, 192, 192, 0.6)'
-                    },
-                    {
-                        label: 'Pago',
-                        data: [1000, 300],
-                        backgroundColor: 'rgba(255, 99, 132, 0.6)'
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
+                if (checkbox.checked) {
+                    totalRecebido += value;
+                    totalAReceber -= value;
+                } else {
+                    totalRecebido -= value;
+                    totalAReceber += value;
                 }
+
+                document.getElementById('total-recebido').textContent = totalRecebido.toFixed(2);
+                document.getElementById('total-a-receber').textContent = totalAReceber.toFixed(2);
             }
-        });
-    </script>
+
+            function updateDespesas(checkbox) {
+                const row = checkbox.closest('tr');
+                const valueCell = row.querySelector('td:nth-child(3)');
+                const value = parseFloat(valueCell.textContent) || 0;
+
+                let totalPago = parseFloat(document.getElementById('total-pago').textContent) || 0;
+                let totalAPagar = parseFloat(document.getElementById('total-a-pagar').textContent) || 0;
+
+                if (checkbox.checked) {
+                    totalPago += value;
+                    totalAPagar -= value;
+                } else {
+                    totalPago -= value;
+                    totalAPagar += value;
+                }
+
+                document.getElementById('total-pago').textContent = totalPago.toFixed(2);
+                document.getElementById('total-a-pagar').textContent = totalAPagar.toFixed(2);
+            }
+        </script>
+    </div>
 </body>
 </html>
