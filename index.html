@@ -9,13 +9,9 @@
 <body>
     <div class="container my-5">
         <h1 class="text-center mb-4">Sistema Financeiro</h1>
-
-        <!-- Tabelas de Faturamento -->
         <div class="mb-5">
             <h2>Faturamento</h2>
             <button class="btn btn-primary mb-3" onclick="adicionarLinha('faturamento-table', 'Nota')">Adicionar Nota</button>
-            <button class="btn btn-secondary mb-3" onclick="resetarTabelas()">Formatar Tabelas</button>
-            <button class="btn btn-success mb-3" onclick="exportarParaExcel()">Exportar para Excel</button>
             <table class="table table-bordered" id="faturamento-table">
                 <thead>
                     <tr>
@@ -36,8 +32,7 @@
                         <th>Ações</th>
                     </tr>
                 </thead>
-                <tbody>
-                </tbody>
+                <tbody></tbody>
                 <tfoot>
                     <tr>
                         <td>Total a Receber:</td>
@@ -53,8 +48,7 @@
                         <td id="total-receber-outubro">R$ 0</td>
                         <td id="total-receber-novembro">R$ 0</td>
                         <td id="total-receber-dezembro">R$ 0</td>
-                        <td id="total-receber-anual">R$ 0</td>
-                        <td></td>
+                        <td id="total-receber-ano">R$ 0</td>
                     </tr>
                     <tr>
                         <td>Total Recebido:</td>
@@ -70,14 +64,12 @@
                         <td id="total-recebido-outubro">R$ 0</td>
                         <td id="total-recebido-novembro">R$ 0</td>
                         <td id="total-recebido-dezembro">R$ 0</td>
-                        <td id="total-recebido-anual">R$ 0</td>
-                        <td></td>
+                        <td id="total-recebido-ano">R$ 0</td>
                     </tr>
                 </tfoot>
             </table>
         </div>
 
-        <!-- Tabelas de Contas a Pagar -->
         <div class="mb-5">
             <h2>Despesas</h2>
             <button class="btn btn-primary mb-3" onclick="adicionarLinha('despesas-table', 'Conta')">Adicionar Conta</button>
@@ -101,8 +93,7 @@
                         <th>Ações</th>
                     </tr>
                 </thead>
-                <tbody>
-                </tbody>
+                <tbody></tbody>
                 <tfoot>
                     <tr>
                         <td>Total a Pagar:</td>
@@ -118,8 +109,7 @@
                         <td id="total-pagar-outubro">R$ 0</td>
                         <td id="total-pagar-novembro">R$ 0</td>
                         <td id="total-pagar-dezembro">R$ 0</td>
-                        <td id="total-pagar-anual">R$ 0</td>
-                        <td></td>
+                        <td id="total-pagar-ano">R$ 0</td>
                     </tr>
                     <tr>
                         <td>Total Pago:</td>
@@ -135,15 +125,13 @@
                         <td id="total-pago-outubro">R$ 0</td>
                         <td id="total-pago-novembro">R$ 0</td>
                         <td id="total-pago-dezembro">R$ 0</td>
-                        <td id="total-pago-anual">R$ 0</td>
-                        <td></td>
+                        <td id="total-pago-ano">R$ 0</td>
                     </tr>
                 </tfoot>
             </table>
         </div>
 
         <script>
-            // Salvar e carregar tabelas no localStorage
             function salvarTabela() {
                 const tabelas = {
                     faturamento: document.getElementById('faturamento-table').innerHTML,
@@ -157,37 +145,28 @@
                 if (tabelas) {
                     document.getElementById('faturamento-table').innerHTML = tabelas.faturamento;
                     document.getElementById('despesas-table').innerHTML = tabelas.despesas;
-                    configurarEventos();
                     atualizarTotais();
                 }
             }
 
-            // Adicionar nova linha na tabela
             function adicionarLinha(tabelaId, tipo) {
                 const tabela = document.getElementById(tabelaId).querySelector('tbody');
                 const novaLinha = document.createElement('tr');
                 let html = `<td contenteditable="true">${tipo} ${tabela.rows.length + 1}</td>`;
                 for (let i = 1; i <= 12; i++) {
-                    html += `<td><span contenteditable="true" onfocus="this.textContent=''" onkeydown="evitarDescerLinha(event)" onblur="atualizarTotais(); salvarTabela();">0</span></td>`;
+                    html += `<td><span contenteditable="true" onfocus="this.textContent=''" oninput="atualizarTotais()">0</span><input type="checkbox" class="ms-2" onclick="atualizarTotais()"></td>`;
                 }
-                html += `<td><span class="total-ano">R$ 0</span></td>`;
-                html += `<td><button class="btn btn-danger btn-sm" onclick="removerLinha(this)">🗑️</button></td>`;
+                html += `<td id="total-ano">R$ 0</td>`;
+                html += `<td>
+                            <button class="btn btn-danger btn-sm" onclick="removerLinha(this)">🗑️</button>
+                            <button class="btn btn-warning btn-sm" onclick="editarLinha(this)">✏️</button>
+                         </td>`;
                 novaLinha.innerHTML = html;
                 tabela.appendChild(novaLinha);
                 salvarTabela();
+                atualizarTotais();
             }
 
-            function evitarDescerLinha(event) {
-                if (event.key === 'Enter') {
-                    event.preventDefault();
-                    const nextCell = event.target.closest('td').nextElementSibling;
-                    if (nextCell && nextCell.querySelector('span')) {
-                        nextCell.querySelector('span').focus();
-                    }
-                }
-            }
-
-            // Atualizar totais
             function atualizarTotais() {
                 const meses = [
                     "janeiro", "fevereiro", "marco", "abril", "maio", "junho",
@@ -195,104 +174,89 @@
                 ];
 
                 const subtotais = {
-                    faturamento: Array(12).fill(0),
-                    despesas: Array(12).fill(0)
+                    faturamento: {},
+                    despesas: {},
+                    recebidos: {},
+                    pagos: {}
                 };
 
-                // Atualizar faturamento
                 document.querySelectorAll('#faturamento-table tbody tr').forEach(row => {
-                    let totalAno = 0;
                     row.querySelectorAll('td').forEach((cell, index) => {
                         const span = cell.querySelector('span');
+                        const checkbox = cell.querySelector('input[type="checkbox"]');
                         if (span && index < 12) {
                             const valor = parseFloat(span.textContent) || 0;
-                            subtotais.faturamento[index] += valor;
-                            totalAno += valor;
+                            const mes = meses[index];
+                            subtotais.faturamento[mes] = (subtotais.faturamento[mes] || 0) + valor;
+                            if (checkbox && checkbox.checked) {
+                                subtotais.recebidos[mes] = (subtotais.recebidos[mes] || 0) + valor;
+                            }
                         }
                     });
-                    const totalAnoCell = row.querySelector('.total-ano');
-                    if (totalAnoCell) totalAnoCell.textContent = `R$ ${totalAno}`;
                 });
 
-                meses.forEach((mes, index) => {
-                    document.getElementById(`total-receber-${mes}`).textContent = `R$ ${subtotais.faturamento[index]}`;
-                });
-
-                document.getElementById('total-receber-anual').textContent = `R$ ${subtotais.faturamento.reduce((a, b) => a + b, 0)}`;
-
-                // Atualizar despesas
                 document.querySelectorAll('#despesas-table tbody tr').forEach(row => {
-                    let totalAno = 0;
                     row.querySelectorAll('td').forEach((cell, index) => {
                         const span = cell.querySelector('span');
+                        const checkbox = cell.querySelector('input[type="checkbox"]');
                         if (span && index < 12) {
                             const valor = parseFloat(span.textContent) || 0;
-                            subtotais.despesas[index] += valor;
-                            totalAno += valor;
+                            const mes = meses[index];
+                            subtotais.despesas[mes] = (subtotais.despesas[mes] || 0) + valor;
+                            if (checkbox && checkbox.checked) {
+                                subtotais.pagos[mes] = (subtotais.pagos[mes] || 0) + valor;
+                            }
                         }
                     });
-                    const totalAnoCell = row.querySelector('.total-ano');
-                    if (totalAnoCell) totalAnoCell.textContent = `R$ ${totalAno}`;
                 });
 
-                meses.forEach((mes, index) => {
-                    document.getElementById(`total-pagar-${mes}`).textContent = `R$ ${subtotais.despesas[index]}`;
+                meses.forEach(mes => {
+                    document.getElementById(`total-receber-${mes}`).textContent = `R$ ${(subtotais.faturamento[mes] || 0).toFixed(2)}`;
+                    document.getElementById(`total-recebido-${mes}`).textContent = `R$ ${(subtotais.recebidos[mes] || 0).toFixed(2)}`;
+                    document.getElementById(`total-pagar-${mes}`).textContent = `R$ ${(subtotais.despesas[mes] || 0).toFixed(2)}`;
+                    document.getElementById(`total-pago-${mes}`).textContent = `R$ ${(subtotais.pagos[mes] || 0).toFixed(2)}`;
                 });
 
-                document.getElementById('total-pagar-anual').textContent = `R$ ${subtotais.despesas.reduce((a, b) => a + b, 0)}`;
+                const totalAnoReceber = Object.values(subtotais.faturamento).reduce((acc, val) => acc + val, 0);
+                const totalAnoRecebido = Object.values(subtotais.recebidos).reduce((acc, val) => acc + val, 0);
+                const totalAnoPagar = Object.values(subtotais.despesas).reduce((acc, val) => acc + val, 0);
+                const totalAnoPago = Object.values(subtotais.pagos).reduce((acc, val) => acc + val, 0);
+
+                document.getElementById('total-receber-ano').textContent = `R$ ${totalAnoReceber.toFixed(2)}`;
+                document.getElementById('total-recebido-ano').textContent = `R$ ${totalAnoRecebido.toFixed(2)}`;
+                document.getElementById('total-pagar-ano').textContent = `R$ ${totalAnoPagar.toFixed(2)}`;
+                document.getElementById('total-pago-ano').textContent = `R$ ${totalAnoPago.toFixed(2)}`;
 
                 salvarTabela();
             }
 
-            // Remover linha
-            function removerLinha(botao) {
-                botao.closest('tr').remove();
-                salvarTabela();
-                atualizarTotais();
-            }
-
-            // Resetar tabelas
-            function resetarTabelas() {
-                if (confirm('Deseja realmente apagar todas as informações e reiniciar as tabelas?')) {
-                    document.getElementById('faturamento-table').querySelector('tbody').innerHTML = '';
-                    document.getElementById('despesas-table').querySelector('tbody').innerHTML = '';
-                    salvarTabela();
+            function editarLinha(botao) {
+                const linha = botao.closest('tr');
+                const novoValor = prompt("Digite o valor a ser aplicado para todos os meses nesta linha:");
+               if (novoValor !== null && !isNaN(novoValor)) {
+                    linha.querySelectorAll('td').forEach((cell, index) => {
+                        if (index > 0 && index <= 12) { // Atualiza apenas as células de meses
+                            const span = cell.querySelector('span');
+                            if (span) {
+                                span.textContent = parseFloat(novoValor).toFixed(2);
+                            }
+                        }
+                    });
                     atualizarTotais();
+                    salvarTabela();
                 }
             }
 
-            // Exportar toda a tabela para Excel
-            function exportarParaExcel() {
-                const tabelas = [
-                    document.getElementById('faturamento-table'),
-                    document.getElementById('despesas-table')
-                ];
-                let csv = '';
-
-                tabelas.forEach(tabela => {
-                    const linhas = Array.from(tabela.rows);
-                    csv += linhas.map(linha => {
-                        const celulas = Array.from(linha.cells);
-                        return celulas.map(celula => celula.innerText).join(',');
-                    }).join('\n') + '\n\n';
-                });
-
-                const blob = new Blob([csv], { type: 'text/csv' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.setAttribute('hidden', '');
-                a.setAttribute('href', url);
-                a.setAttribute('download', 'tabelas_financeiras.csv');
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
+            function removerLinha(botao) {
+                const linha = botao.closest('tr');
+                linha.remove();
+                atualizarTotais();
+                salvarTabela();
             }
 
-            // Carregar dados ao iniciar
-            window.onload = function() {
-                carregarTabelas();
-            };
+            window.onload = carregarTabelas;
         </script>
     </div>
 </body>
 </html>
+
